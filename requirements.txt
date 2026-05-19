@@ -6,3 +6,5 @@ langchain-community
 langgraph
 fastapi
 uvicorn
+dependency-injector
+pydantic-settings
