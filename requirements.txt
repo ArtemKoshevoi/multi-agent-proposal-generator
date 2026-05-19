@@ -1,0 +1,8 @@
+anthropic
+python-dotenv
+chromadb
+langchain-text-splitters
+langchain-community
+langgraph
+fastapi
+uvicorn

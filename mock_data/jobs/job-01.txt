@@ -1,0 +1,8 @@
+Full Stack Developer for Mobile App
+Summary
+We are seeking a skilled Full Stack Developer to create a mobile app using React and Node.js. The ideal candidate will have experience in both front-end and back-end development, with a strong understanding of mobile app development. Responsibilities include designing and implementing user interfaces, developing server-side logic, and ensuring seamless integration between the front-end and back-end. The candidate should be able to work independently and collaboratively as part of a team.
+Duration: 1 to 3 months
+Hours: Less than 30 hrs/week
+Level: Intermediate
+
+Skills: HTML, JavaScript, React, Node.js, Full-Stack Development, Mobile App Development, Android App Development, iOS, API

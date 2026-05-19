@@ -1,0 +1,40 @@
+Full-Stack React/Firebase Expert – App Security Audit & Performance Optimization (One-Shot Mission)
+Summary
+We are looking for a senior-level developer to perform a comprehensive review and "cleanup" of our AI-powered web application.
+
+The app is built using React (Vite), TypeScript, and Firebase. It leverages the Google Gemini Multimodal Live API for real-time text-to-speech (TTS) and AI simulations.
+
+We recently encountered a project suspension from Google Cloud due to a suspected API key leak/resource abuse. We need an expert to secure the environment and ensure the platform is production-ready.
+
+Your Mission:
+
+Security Audit: Review our API key management and implementation. Ensure all keys (Gemini, Firebase, etc.) are restricted by domain/referrers and properly secured.
+
+Infrastructure Cleanup: Audit the current Google Cloud/Firebase configuration. Resolve target mismatch issues (e.g., Site Not Found errors) and clean up redundant deployment targets.
+
+Performance & Stability: Optimize the app’s loading speed, specifically the pre-loading phase of AI simulations. Review the current logic for npm audit vulnerabilities and perform safe dependency updates (Firebase Admin SDK v13+, etc.).
+
+Bug Fixing: Resolve minor UI/UX logic issues, such as voice/gender mismatches in AI profiles.
+
+Deployment Workflow: Ensure the PowerShell/Firebase CLI deployment pipeline is clean and repeatable.
+
+Required Skills:
+Expertise in React (TS) and Firebase (Firestore, Auth, Hosting).
+
+Strong experience with Google Cloud Platform (GCP) security and API management.
+
+Experience with Google Gemini API or similar LLM integrations.
+
+Deep understanding of web security best practices (CORS, API restrictions, environment variables).
+
+Ability to work with Legacy/Existing codebases and perform "surgical" fixes without breaking functionality.
+
+Project Details:
+Type: One-time project (One-shot).
+Timeline: Immediate start preferred.
+
+Duration: 1 to 3 months
+Hours: Less than 30 hrs/week
+Level: Intermediate
+
+Mandatory skills: Mobile App Design, iOS

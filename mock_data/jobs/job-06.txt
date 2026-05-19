@@ -1,0 +1,169 @@
+Senior Full Stack Engineer build MVP with production quality architecture for social platform
+Summary
+1) EXPECTATIONS ON TASKS AND DELIVERABLES:
+
+We are building a modern enthusiast-focused social and community platform designed around user-generated content, engagement, collections, reviews, discovery, and community interaction.
+
+The goal of this phase is to build the foundational platform architecture and core community systems.
+
+Core deliverables include:
+Responsive web platform and mobile-first architecture
+User authentication and profile systems
+Feed-based social/community experience
+Multiple content/post types
+Reviews and ratings systems
+Collection/showcase systems
+Member discovery and following systems
+Polls and engagement systems
+Messaging/inbox system
+Notifications and alerts system
+Gamification systems (badges, streaks, engagement tracking)
+Search and filtering infrastructure
+Media/image upload systems
+Admin/moderation tools
+Ecommerce for digital products and subscriptions
+Subscription management
+Automated Weekly Newsletter
+Auto-generated site and site admin reporting
+Scalable backend architecture designed for future AI and marketplace expansion
+
+The platform must be designed for:
+scalability,
+high engagement,
+mobile-first usage,
+future AI integrations,
+and future commerce/marketplace capabilities.
+
+IMPORTANT:
+We are NOT looking for a “throwaway MVP” or low-quality prototype.
+
+We are intentionally building production-quality infrastructure and production-ready systems from the beginning. While development may occur in phases, the expectation is that architecture, code quality, scalability, security, maintainability, and performance are treated seriously from day one.
+
+We are looking for engineers who understand:
+scalable system design,
+clean architecture,
+maintainable codebases,
+production deployment standards,
+and long-term product evolution.
+
+We are NOT looking for:
+basic website developers,
+WordPress-only developers,
+rapid prototype agencies,
+or junior-only teams.
+
+We are specifically seeking developers with experience building modern consumer-facing social/community platforms.
+
+2) SKILLS REQUIRED 
+(Backend Development)
+Node.js
+TypeScript
+NestJS or Express.js
+PostgreSQL
+Redis
+REST API development
+Authentication systems
+Real-time systems
+Notification systems
+Messaging/chat systems
+
+(Frontend Development)
+React.js
+Next.js
+TypeScript
+Responsive/mobile-first UI development
+Feed-based UI systems
+Performance optimization
+
+(Mobile Development)
+React Native preferred
+Push notifications
+Mobile navigation systems
+Image/media upload handling
+
+(Infrastructure & DevOps)
+AWS or GCP
+Docker
+CI/CD pipelines
+Cloud deployment
+Monitoring/logging systems
+
+(Search & Discovery)
+ElasticSearch or OpenSearch
+Filtering systems
+Search optimization
+
+3. PRODUCT & UX EXPERIENCE EXPECTATIONS
+Strong preference for candidates with experience building:
+social platforms,
+community apps,
+hobbyist/collector platforms,
+review systems,
+feed-based products,
+mobile-first consumer applications.
+
+Experience with products similar to:
+Facebook
+Instagram
+Reddit
+Discord
+Untappd
+Letterboxd
+Strava
+Goodreads
+StockX
+Whatnot
+community-driven marketplaces,
+enthusiast/collector platforms,
+social discovery products,
+review platforms,
+or engagement-driven consumer applications
+
+is highly preferred.
+
+Strong preference for candidates who have worked on:
+feed-based social products,
+hobbyist or enthusiast communities,
+user-generated content platforms,
+recommendation/discovery systems,
+or mobile-first consumer applications at scale.
+Communication Expectations
+
+4) COMMUNICATION EXPECTATIONS
+Good communication is extremely important.
+We are looking for developers and/or teams who:
+communicate clearly and proactively,
+provide regular progress updates,
+identify risks and blockers early,
+explain technical decisions clearly,
+and collaborate well on product direction.
+
+Strong English communication skills are required.
+
+5) HOW WE WORK 
+We prefer working with experienced professionals who think strategically and care about long-term product quality.
+
+Our preferred workflow:
+Collaborative planning before development begins
+Architecture-first mindset
+Milestone-based development
+Weekly progress updates/check-ins
+Git-based workflow with clean documentation
+Scalable, maintainable code standards
+Production-ready engineering standards
+Focus on performance, UX, reliability, and future extensibility
+
+We value:
+thoughtful engineering,
+product thinking,
+scalability,
+and clean architecture over rushing features.
+
+This project is intended to evolve into a much larger AI-powered community and marketplace ecosystem over time, so we are looking for long-term technical partners rather than short-term task completion.
+Duration: More than 6 months
+Hours: More than 30 hrs/week
+Level: Expert
+Budget: $20.00 - $35.00 hourly
+Project Type: Ongoing project
+
+Mandatory skills: PostgreSQL, Redis, Next.js, Tailwind CSS, Node.js, TypeScript, React, react query, React Native, REST API
