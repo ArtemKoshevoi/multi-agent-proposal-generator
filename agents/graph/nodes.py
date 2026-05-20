@@ -1,13 +1,17 @@
-import anthropic
-from dotenv import load_dotenv
-from agents.rag.search import search_profile
+from langchain_anthropic import ChatAnthropic
+from langchain_core.messages import HumanMessage, SystemMessage
+
+from agents.environments import environments
 from agents.graph.state import ProposalState
-import os
+from agents.rag.search import search_profile
 
-load_dotenv()
+MODEL_NAME = "claude-haiku-4-5-20251001"
 
-client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-MODEL = "claude-haiku-4-5-20251001"
+model = ChatAnthropic(
+    model=MODEL_NAME,
+    temperature=0,
+    api_key=environments.ANTHROPIC_API_KEY,
+)
 
 PROPOSAL_SYSTEM_PROMPT = """You are an Upwork proposal writer for a senior developer named Artem Koshevoi.
 
@@ -30,27 +34,21 @@ Artem Koshevoi"""
 
 
 def analyze_job(state: ProposalState) -> dict:
-    """Node 1: Extracts key info from job description."""
     print(">> Node: analyze_job")
 
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=500,
-        system="You are a job analyzer. Extract: tech stack, budget if mentioned, duration, project type, experience level. Be concise and structured.",
-        messages=[{"role": "user", "content": state["job_text"]}]
-    )
+    response = model.invoke([
+        SystemMessage(content="You are a job analyzer. Extract: tech stack, budget if mentioned, duration, project type, experience level. Be concise and structured."),
+        HumanMessage(content=state["job_text"]),
+    ])
 
-    return {"analysis": response.content[0].text}
+    return {"analysis": response.content}
 
 
 def qualify_job(state: ProposalState) -> dict:
-    """Node 2: Decides GO / MAYBE / SKIP."""
     print(">> Node: qualify_job")
 
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=200,
-        system="""You are a job qualifier for an outstaffing company.
+    response = model.invoke([
+        SystemMessage(content="""You are a job qualifier for an outstaffing company.
 
 Our developer: Artem Koshevoi — senior frontend/fullstack, React, Next.js, TypeScript, Node.js, React Native. 7 years experience.
 
@@ -61,13 +59,11 @@ Verdict rules:
 
 Respond with exactly:
 VERDICT: GO or MAYBE or SKIP
-REASON: one sentence""",
-        messages=[{"role": "user", "content": state["analysis"]}]
-    )
+REASON: one sentence"""),
+        HumanMessage(content=state["analysis"]),
+    ])
 
-    text = response.content[0].text
-
-    # parse verdict and reason from response
+    text = response.content
     verdict = "MAYBE"
     reason = text
 
@@ -77,18 +73,16 @@ REASON: one sentence""",
         if line.startswith("REASON:"):
             reason = line.replace("REASON:", "").strip()
 
-    # set status based on verdict
     status = "skipped" if verdict == "SKIP" else "active"
 
     return {
         "verdict": verdict,
         "verdict_reason": reason,
-        "status": status
+        "status": status,
     }
 
 
 def search_rag(state: ProposalState) -> dict:
-    """Node 3: Finds relevant profile sections."""
     print(">> Node: search_rag")
 
     results = search_profile(state["job_text"], n_results=4)
@@ -98,10 +92,8 @@ def search_rag(state: ProposalState) -> dict:
 
 
 def write_proposal(state: ProposalState) -> dict:
-    """Node 4: Generates proposal. Uses feedback if this is a revision."""
     print(f">> Node: write_proposal (revision #{state['revision_count']})")
 
-    # add feedback instruction if this is a revision
     extra = ""
     if state["revision_count"] > 0 and state["proposal_feedback"]:
         extra = f"\n\nPrevious proposal was rejected. Address this feedback:\n{state['proposal_feedback']}"
@@ -115,27 +107,22 @@ JOB ANALYSIS:
 FREELANCER PROFILE (relevant sections):
 {state['rag_context']}{extra}"""
 
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=1000,
-        system=PROPOSAL_SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": user_message}]
-    )
+    response = model.invoke([
+        SystemMessage(content=PROPOSAL_SYSTEM_PROMPT),
+        HumanMessage(content=user_message),
+    ])
 
     return {
-        "proposal": response.content[0].text,
-        "revision_count": state["revision_count"] + 1
+        "proposal": response.content,
+        "revision_count": state["revision_count"] + 1,
     }
 
 
 def evaluate_proposal(state: ProposalState) -> dict:
-    """Node 5: LLM evaluates proposal quality."""
     print(">> Node: evaluate_proposal")
 
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=300,
-        system="""You are a strict Upwork proposal reviewer.
+    response = model.invoke([
+        SystemMessage(content="""You are a strict Upwork proposal reviewer.
 
 Evaluate the proposal against these criteria:
 1. Opens with specific observation about client's problem (not generic intro)
@@ -146,12 +133,11 @@ Evaluate the proposal against these criteria:
 
 Respond with exactly:
 GRADE: APPROVED or NEEDS_IMPROVEMENT
-FEEDBACK: one or two sentences on what to fix (only if NEEDS_IMPROVEMENT)""",
-        messages=[{"role": "user", "content": f"Job:\n{state['job_text']}\n\nProposal:\n{state['proposal']}"}]
-    )
+FEEDBACK: one or two sentences on what to fix (only if NEEDS_IMPROVEMENT)"""),
+        HumanMessage(content=f"Job:\n{state['job_text']}\n\nProposal:\n{state['proposal']}"),
+    ])
 
-    text = response.content[0].text
-
+    text = response.content
     grade = "APPROVED"
     feedback = ""
 
@@ -169,11 +155,10 @@ FEEDBACK: one or two sentences on what to fix (only if NEEDS_IMPROVEMENT)""",
 
     return {
         "proposal_feedback": feedback,
-        "status": status
+        "status": status,
     }
 
 
 def reject_job(state: ProposalState) -> dict:
-    """Node: handles skipped jobs."""
     print(f">> Node: reject_job — {state['verdict_reason']}")
     return {}
