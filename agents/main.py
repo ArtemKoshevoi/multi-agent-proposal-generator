@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from agents.config import environments
+from agents.environments import environments
 from agents.containers import ProposalContainer
 from agents.lifespans import graph_lifespan
 from agents.router import router
