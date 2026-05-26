@@ -5,6 +5,4 @@ __pycache__/
 *.pyo
 chroma_db/
 .DS_Store
-mock_data/jobs/*.json
-mock_data/artem_koshevoi.txt
-mock_data/developers/*.txt
+mock_data/
