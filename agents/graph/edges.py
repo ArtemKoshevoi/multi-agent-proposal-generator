@@ -10,9 +10,9 @@ def route_after_qualify(state: ProposalState) -> Literal["search_rag", "reject_j
     return "search_rag"
 
 
-def route_after_evaluate(state: ProposalState) -> Literal["write_proposal", END]:
+def route_after_evaluate(state: ProposalState) -> str:
     """After evaluation: revise or finish.
-    Max 2 revisions to avoid infinite loop.
+    Max 3 revisions to avoid infinite loop.
     """
     if state["status"] == "approved":
         return END

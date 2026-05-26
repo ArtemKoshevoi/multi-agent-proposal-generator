@@ -6,13 +6,13 @@ from agents.graph.state import ProposalState
 from agents.rag.search import search_profile
 
 model = ChatAnthropic(
-    model="claude-haiku-4-5-20251001",
+    model="claude-haiku-4-5-20251001",  # type: ignore[call-arg]
     temperature=0,
     api_key=environments.ANTHROPIC_API_KEY,
 )
 
 writer_model = ChatAnthropic(
-    model="claude-sonnet-4-6",
+    model="claude-sonnet-4-6",  # type: ignore[call-arg]
     temperature=0.3,
     api_key=environments.ANTHROPIC_API_KEY,
 )
@@ -47,10 +47,12 @@ def analyze_job(state: ProposalState) -> dict:
     parts = []
     if state.get("title"):
         parts.append(f"Title: {state['title']}")
-    if state.get("features"):
-        parts.append("Details: " + " | ".join(state["features"]))
-    if state.get("skills"):
-        parts.append("Required skills: " + ", ".join(state["skills"]))
+    features = state.get("features")
+    if features:
+        parts.append("Details: " + " | ".join(features))
+    skills = state.get("skills")
+    if skills:
+        parts.append("Required skills: " + ", ".join(skills))
     parts.append(f"Description:\n{state['job_text']}")
     analyze_input = "\n".join(parts)
 
@@ -65,8 +67,10 @@ def analyze_job(state: ProposalState) -> dict:
 def qualify_job(state: ProposalState) -> dict:
     print(">> Node: qualify_job")
 
-    features_text = "\n".join(state["features"]) if state.get("features") else "Not specified"
-    skills_text = ", ".join(state["skills"]) if state.get("skills") else "Not specified"
+    features = state.get("features")
+    skills = state.get("skills")
+    features_text = "\n".join(features) if features else "Not specified"
+    skills_text = ", ".join(skills) if skills else "Not specified"
 
     qualify_input = f"""JOB ANALYSIS:
 {state['analysis']}
@@ -95,7 +99,7 @@ REASON: one sentence"""),
         HumanMessage(content=qualify_input),
     ])
 
-    text = response.content
+    text = str(response.content)
     verdict = "MAYBE"
     reason = text
 
@@ -118,10 +122,12 @@ def search_rag(state: ProposalState) -> dict:
     print(">> Node: search_rag")
 
     query_parts = []
-    if state.get("title"):
-        query_parts.append(state["title"])
-    if state.get("skills"):
-        query_parts.append(", ".join(state["skills"]))
+    title = state.get("title")
+    if title:
+        query_parts.append(title)
+    skills = state.get("skills")
+    if skills:
+        query_parts.append(", ".join(skills))
     query_parts.append(state["job_text"][:600])
     query = " ".join(query_parts)
 
@@ -176,11 +182,13 @@ def write_proposal(state: ProposalState) -> dict:
 
     parts.append(f"JOB DESCRIPTION:\n{state['job_text']}")
 
-    if state.get("features"):
-        parts.append("JOB DETAILS (budget, duration, level):\n" + "\n".join(state["features"]))
+    features = state.get("features")
+    if features:
+        parts.append("JOB DETAILS (budget, duration, level):\n" + "\n".join(features))
 
-    if state.get("skills"):
-        parts.append(f"REQUIRED SKILLS: {', '.join(state['skills'])}")
+    skills = state.get("skills")
+    if skills:
+        parts.append(f"REQUIRED SKILLS: {', '.join(skills)}")
 
     questions_section = _build_questions_section(state)
     if questions_section:
@@ -235,7 +243,7 @@ FEEDBACK: one or two sentences on the most important thing to fix (only if NEEDS
         HumanMessage(content=eval_input),
     ])
 
-    text = response.content
+    text = str(response.content)
     grade = "APPROVED"
     feedback = ""
 
