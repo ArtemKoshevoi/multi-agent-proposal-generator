@@ -1,8 +1,10 @@
 import logging
 from uuid import uuid4
 
+from langgraph.types import Command
+
 from agents.graph.workflow import create_initial_state
-from agents.schemas import JobRequest, ProposalResult
+from agents.schemas import JobRequest, ProposalResult, RevisionRequest
 
 
 class ProposalService:
@@ -25,6 +27,23 @@ class ProposalService:
             verdict=result.get("verdict", ""),
             verdict_reason=result.get("verdict_reason", ""),
             revision_count=result.get("revision_count", 0),
-            versions=[],
+            versions=result.get("versions", []),
             thread_id=thread_id,
+        )
+
+    async def revise_proposal(self, request: RevisionRequest) -> ProposalResult:
+        config = {"configurable": {"thread_id": request.thread_id}}
+
+        self.logger.info("Resuming thread_id=%s feedback=%r", request.thread_id, request.feedback)
+        result = await self.graph.ainvoke(Command(resume=request.feedback), config=config)
+
+        return ProposalResult(
+            proposal=result.get("proposal", ""),
+            developer_id="artem",
+            developer_name="Artem Koshevoi",
+            verdict=result.get("verdict", ""),
+            verdict_reason=result.get("verdict_reason", ""),
+            revision_count=result.get("revision_count", 0),
+            versions=result.get("versions", []),
+            thread_id=request.thread_id,
         )

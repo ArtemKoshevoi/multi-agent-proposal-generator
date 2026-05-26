@@ -1,5 +1,6 @@
 from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import HumanMessage, SystemMessage
+from langgraph.types import interrupt
 
 from agents.environments import environments
 from agents.graph.state import ProposalState
@@ -268,3 +269,15 @@ FEEDBACK: one or two sentences on the most important thing to fix (only if NEEDS
 def reject_job(state: ProposalState) -> dict:
     print(f">> Node: reject_job — {state['verdict_reason']}")
     return {}
+
+
+def manager_review(state: ProposalState) -> dict:
+    print(">> Node: manager_review — waiting for human feedback")
+    feedback = str(interrupt(state["proposal"]))
+    approved = feedback.lower().strip() == "approve"
+    print(f"   Manager: {'APPROVED' if approved else repr(feedback)}")
+    return {
+        "versions": [state["proposal"]],
+        "proposal_feedback": feedback,
+        "status": "approved" if approved else "active",
+    }

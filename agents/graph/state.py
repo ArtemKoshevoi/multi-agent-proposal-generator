@@ -1,4 +1,5 @@
-from typing import TypedDict
+import operator
+from typing import Annotated, TypedDict
 
 
 class ProposalState(TypedDict):
@@ -34,6 +35,7 @@ class ProposalState(TypedDict):
     proposal: str
     proposal_feedback: str
     revision_count: int
+    versions: Annotated[list[str], operator.add]
 
     # --- flow control ---
     status: str                # active / skipped / approved
