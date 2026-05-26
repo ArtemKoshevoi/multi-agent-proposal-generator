@@ -22,8 +22,8 @@ class ProposalService:
 
         return ProposalResult(
             proposal=result.get("proposal", ""),
-            developer_id="artem",
-            developer_name="Artem Koshevoi",
+            developer_id=result.get("developer_id", ""),
+            developer_name=result.get("developer_name", ""),
             verdict=result.get("verdict", ""),
             verdict_reason=result.get("verdict_reason", ""),
             revision_count=result.get("revision_count", 0),
@@ -39,8 +39,8 @@ class ProposalService:
 
         return ProposalResult(
             proposal=result.get("proposal", ""),
-            developer_id="artem",
-            developer_name="Artem Koshevoi",
+            developer_id=result.get("developer_id", ""),
+            developer_name=result.get("developer_name", ""),
             verdict=result.get("verdict", ""),
             verdict_reason=result.get("verdict_reason", ""),
             revision_count=result.get("revision_count", 0),

@@ -32,6 +32,10 @@ def create_initial_state(payload: JobRequest) -> dict:
         "client_person_notes": client_research.person_notes if client_research else None,
         "client_company_notes": client_research.company_notes if client_research else None,
 
+        # developer
+        "developer_id": payload.developer_id,
+        "developer_name": payload.developer_id.replace("_", " ").title(),
+
         # analysis / rag / proposal (empty at start)
         "analysis": "",
         "verdict": "",

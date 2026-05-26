@@ -28,6 +28,7 @@ class JobRequest(BaseModel):
     proposal_questions: list[str] | None = None
     client_info: ClientInfo | None = None
     client_research: ClientResearch | None = None
+    developer_id: str = "artem_koshevoi"
 
 
 class RevisionRequest(BaseModel):

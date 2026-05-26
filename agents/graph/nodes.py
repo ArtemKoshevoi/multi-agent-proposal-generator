@@ -18,8 +18,9 @@ writer_model = ChatAnthropic(
     api_key=environments.ANTHROPIC_API_KEY,
 )
 
-PROPOSAL_SYSTEM_PROMPT = """You are an Upwork proposal writer for a senior developer named Artem Koshevoi.
-Artem: senior frontend/fullstack — React, Next.js, TypeScript, Node.js, React Native. 7 years experience.
+def _build_proposal_system_prompt(developer_name: str) -> str:
+    return f"""You are an Upwork proposal writer for a senior developer named {developer_name}.
+The developer's skills, experience, and past projects are in FREELANCER PROFILE below — use them.
 
 FORMAT:
 - If PROPOSAL QUESTIONS are listed: write a short cover letter (3-4 sentences), then answer each question labeled Q1:, Q2:, etc., separated by blank lines.
@@ -29,17 +30,17 @@ FORMAT:
 WRITING RULES:
 - Plain text only. No markdown, no bold, no bullet points, no headers.
 - Never open with "I am excited", "I have extensive experience", or "I noticed your job posting".
-- Open with a specific observation about their problem, stack, or business — not a generic intro about Artem.
+- Open with a specific observation about their problem, stack, or business — not a generic intro about the developer.
 - Reference 1-2 real projects with full URLs when relevant. Format: Name (https://url)
 - No em-dashes (—). Use colons, commas, or parentheses instead.
 - Use contractions naturally. Keep it direct and conversational.
-- If Artem is missing something the client explicitly requires, flag it honestly in one sentence. Honesty builds trust.
+- If the developer is missing something the client explicitly requires, flag it honestly in one sentence. Honesty builds trust.
 - If client research notes are provided, weave in one specific detail that shows you understand their business.
 - End with a calm next step: suggest a short call or ask one focused question.
 
 End with exactly:
 Best regards,
-Artem Koshevoi"""
+{developer_name}"""
 
 
 def analyze_job(state: ProposalState) -> dict:
@@ -87,11 +88,11 @@ COMPETITION: {state.get('client_competition_level') or 'Unknown'} proposals alre
     response = model.invoke([
         SystemMessage(content="""You are a job qualifier for an outstaffing company.
 
-Our developer: Artem Koshevoi — senior frontend/fullstack, React, Next.js, TypeScript, Node.js, React Native. 7 years experience.
+Our team covers: React, Next.js, TypeScript, Node.js, React Native, Angular, Python, AI/LLM integrations. Senior level, 5-10 years experience per developer.
 
 Verdict rules:
-- SKIP: budget confirmed below $25/hr, or required stack completely outside our expertise (e.g. pure PHP, .NET, iOS native)
-- GO: React/Next.js/TypeScript/Node.js core stack, budget $30+/hr confirmed
+- SKIP: budget confirmed below $25/hr, or required stack completely outside our expertise (e.g. pure PHP, .NET, iOS native, embedded C)
+- GO: strong stack match, budget $30+/hr confirmed
 - MAYBE: partial stack match, budget unclear, or budget in range but unconfirmed
 
 Respond with exactly:
@@ -132,7 +133,7 @@ def search_rag(state: ProposalState) -> dict:
     query_parts.append(state["job_text"][:600])
     query = " ".join(query_parts)
 
-    results = search_profile(query, n_results=5)
+    results = search_profile(query, developer_id=state["developer_id"], n_results=5)
     context = "\n\n---\n\n".join(results)
 
     return {"rag_context": context}
@@ -205,7 +206,7 @@ def write_proposal(state: ProposalState) -> dict:
     user_message = "\n\n".join(parts)
 
     response = writer_model.invoke([
-        SystemMessage(content=PROPOSAL_SYSTEM_PROMPT),
+        SystemMessage(content=_build_proposal_system_prompt(state["developer_name"])),
         HumanMessage(content=user_message),
     ])
 

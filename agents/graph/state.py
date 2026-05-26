@@ -23,6 +23,10 @@ class ProposalState(TypedDict):
     client_person_notes: str | None
     client_company_notes: str | None
 
+    # --- developer ---
+    developer_id: str
+    developer_name: str
+
     # --- analysis results ---
     analysis: str
     verdict: str               # GO / MAYBE / SKIP
