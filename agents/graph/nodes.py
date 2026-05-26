@@ -44,9 +44,19 @@ Artem Koshevoi"""
 def analyze_job(state: ProposalState) -> dict:
     print(">> Node: analyze_job")
 
+    parts = []
+    if state.get("title"):
+        parts.append(f"Title: {state['title']}")
+    if state.get("features"):
+        parts.append("Details: " + " | ".join(state["features"]))
+    if state.get("skills"):
+        parts.append("Required skills: " + ", ".join(state["skills"]))
+    parts.append(f"Description:\n{state['job_text']}")
+    analyze_input = "\n".join(parts)
+
     response = model.invoke([
-        SystemMessage(content="You are a job analyzer. Extract: tech stack, budget if mentioned, duration, project type, experience level. Be concise and structured."),
-        HumanMessage(content=state["job_text"]),
+        SystemMessage(content="You are a job analyzer. Extract: tech stack, budget (use the Details line if present), duration, project type, experience level. Be concise and structured."),
+        HumanMessage(content=analyze_input),
     ])
 
     return {"analysis": response.content}
@@ -107,7 +117,15 @@ REASON: one sentence"""),
 def search_rag(state: ProposalState) -> dict:
     print(">> Node: search_rag")
 
-    results = search_profile(state["job_text"], n_results=4)
+    query_parts = []
+    if state.get("title"):
+        query_parts.append(state["title"])
+    if state.get("skills"):
+        query_parts.append(", ".join(state["skills"]))
+    query_parts.append(state["job_text"][:600])
+    query = " ".join(query_parts)
+
+    results = search_profile(query, n_results=5)
     context = "\n\n---\n\n".join(results)
 
     return {"rag_context": context}
