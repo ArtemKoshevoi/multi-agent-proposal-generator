@@ -8,13 +8,16 @@ class ClientInfo(BaseModel):
     hires: int | None = None
     company_industry: str | None = None
     company_size: str | None = None
+    competition_level: str | None = None       # e.g. "50+" proposals already submitted
+    previous_jobs_summary: str | None = None   # e.g. "Mostly Webflow/design at $14-20/hr"
 
 
 class ClientResearch(BaseModel):
     person_name: str | None = None
     company_name: str | None = None
     company_domain: str | None = None
-    search_notes: str | None = None
+    person_notes: str | None = None    # what web search found about the person
+    company_notes: str | None = None   # what web search found about the company
 
 
 class JobRequest(BaseModel):

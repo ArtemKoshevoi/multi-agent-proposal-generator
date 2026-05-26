@@ -13,7 +13,7 @@ class ProposalService:
     async def process_job(self, payload: JobRequest) -> ProposalResult:
         thread_id = str(uuid4())
         config = {"configurable": {"thread_id": thread_id}}
-        initial_state = create_initial_state(payload.job_text)
+        initial_state = create_initial_state(payload)
 
         self.logger.info("Processing job thread_id=%s", thread_id)
         result = await self.graph.ainvoke(initial_state, config=config)
