@@ -5,11 +5,15 @@ from agents.environments import environments
 from agents.graph.state import ProposalState
 from agents.rag.search import search_profile
 
-MODEL_NAME = "claude-haiku-4-5-20251001"
-
 model = ChatAnthropic(
-    model=MODEL_NAME,
+    model="claude-haiku-4-5-20251001",
     temperature=0,
+    api_key=environments.ANTHROPIC_API_KEY,
+)
+
+writer_model = ChatAnthropic(
+    model="claude-sonnet-4-6",
+    temperature=0.3,
     api_key=environments.ANTHROPIC_API_KEY,
 )
 
@@ -51,20 +55,34 @@ def analyze_job(state: ProposalState) -> dict:
 def qualify_job(state: ProposalState) -> dict:
     print(">> Node: qualify_job")
 
+    features_text = "\n".join(state["features"]) if state.get("features") else "Not specified"
+    skills_text = ", ".join(state["skills"]) if state.get("skills") else "Not specified"
+
+    qualify_input = f"""JOB ANALYSIS:
+{state['analysis']}
+
+STRUCTURED JOB DETAILS (budget, duration, level):
+{features_text}
+
+REQUIRED SKILLS:
+{skills_text}
+
+COMPETITION: {state.get('client_competition_level') or 'Unknown'} proposals already submitted"""
+
     response = model.invoke([
         SystemMessage(content="""You are a job qualifier for an outstaffing company.
 
 Our developer: Artem Koshevoi — senior frontend/fullstack, React, Next.js, TypeScript, Node.js, React Native. 7 years experience.
 
 Verdict rules:
-- SKIP: budget below $25/hr, or stack completely outside our expertise
-- GO: React/Next.js/TypeScript/Node.js stack, budget $30+/hr
-- MAYBE: partial match or budget unclear
+- SKIP: budget confirmed below $25/hr, or required stack completely outside our expertise (e.g. pure PHP, .NET, iOS native)
+- GO: React/Next.js/TypeScript/Node.js core stack, budget $30+/hr confirmed
+- MAYBE: partial stack match, budget unclear, or budget in range but unconfirmed
 
 Respond with exactly:
 VERDICT: GO or MAYBE or SKIP
 REASON: one sentence"""),
-        HumanMessage(content=state["analysis"]),
+        HumanMessage(content=qualify_input),
     ])
 
     text = response.content
@@ -159,7 +177,7 @@ def write_proposal(state: ProposalState) -> dict:
 
     user_message = "\n\n".join(parts)
 
-    response = model.invoke([
+    response = writer_model.invoke([
         SystemMessage(content=PROPOSAL_SYSTEM_PROMPT),
         HumanMessage(content=user_message),
     ])
@@ -173,20 +191,30 @@ def write_proposal(state: ProposalState) -> dict:
 def evaluate_proposal(state: ProposalState) -> dict:
     print(">> Node: evaluate_proposal")
 
+    questions = state.get("proposal_questions") or []
+    questions_note = ""
+    if questions:
+        labeled = "\n".join(f"Q{i}: {q}" for i, q in enumerate(questions, 1))
+        questions_note = f"\n\nPROPOSAL QUESTIONS that must be answered:\n{labeled}"
+
+    eval_input = f"Job:\n{state['job_text']}{questions_note}\n\nProposal:\n{state['proposal']}"
+
     response = model.invoke([
         SystemMessage(content="""You are a strict Upwork proposal reviewer.
 
-Evaluate the proposal against these criteria:
-1. Opens with specific observation about client's problem (not generic intro)
-2. References at least one real project or URL
-3. Explains concrete approach (not vague promises)
-4. Has clear next step or question at the end
-5. No markdown, no bullet points, plain text only
+Evaluate against these criteria:
+1. Does NOT open with a generic phrase like "I am excited", "I have extensive experience", or "I noticed your job posting"
+2. Opens with a specific observation about the client's problem, stack, or business
+3. References at least one real project with a full URL in the format: Name (https://url)
+4. If PROPOSAL QUESTIONS were listed: each question has a clearly labeled answer (Q1:, Q2:, etc.)
+5. No em-dashes (—) anywhere in the text
+6. Plain text only — no markdown, no bold, no bullet points, no headers
+7. Ends with a concrete next step or one focused question
 
 Respond with exactly:
 GRADE: APPROVED or NEEDS_IMPROVEMENT
-FEEDBACK: one or two sentences on what to fix (only if NEEDS_IMPROVEMENT)"""),
-        HumanMessage(content=f"Job:\n{state['job_text']}\n\nProposal:\n{state['proposal']}"),
+FEEDBACK: one or two sentences on the most important thing to fix (only if NEEDS_IMPROVEMENT)"""),
+        HumanMessage(content=eval_input),
     ])
 
     text = response.content

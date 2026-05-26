@@ -17,7 +17,7 @@ def route_after_evaluate(state: ProposalState) -> Literal["write_proposal", END]
     if state["status"] == "approved":
         return END
 
-    if state["revision_count"] >= 2:
+    if state["revision_count"] >= 3:
         print("   Max revisions reached - accepting as is")
         return END
 
