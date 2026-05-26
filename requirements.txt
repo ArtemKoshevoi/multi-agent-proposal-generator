@@ -9,3 +9,5 @@ uvicorn
 dependency-injector
 pydantic-settings
 langchain-anthropic
+python-telegram-bot
+httpx
