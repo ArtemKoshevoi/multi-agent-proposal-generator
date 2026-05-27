@@ -55,9 +55,10 @@ POST /revise-proposal  { thread_id, feedback }
 | Vector store / RAG | ChromaDB + sentence-transformers |
 | API | FastAPI + dependency injection |
 | Type validation | Pydantic v2 (API) / TypedDict (graph state) |
-| Persistence | LangGraph MemorySaver (thread-based checkpointing) |
+| Persistence | SQLite via AsyncSqliteSaver (thread checkpoints survive restarts) |
 | Messaging | Telegram Bot (polling, human-in-the-loop interface) |
 | Language | Python 3.11+ |
+| Containerization | Docker + Docker Compose |
 
 ---
 
@@ -96,3 +97,20 @@ make test      # send a test job (JOB=1|2, DEVELOPER=artem_koshevoi|dmytro_mamai
 ```
 
 Copy `.env.example` to `.env` and fill in `ANTHROPIC_API_KEY` and `TELEGRAM_TOKEN`.
+
+---
+
+## Running with Docker
+
+```bash
+make install   # one-time: create venv
+make setup     # one-time: load developer profiles into ChromaDB (writes ./chroma_db)
+make docker-build  # build the image
+make docker-up     # start in background
+make docker-logs   # tail logs
+make docker-down   # stop
+```
+
+The `chroma_db/` directory (created by `make setup`) is mounted read-only into the container. The SQLite checkpoint database is stored in `data/checkpoints.db` (mounted as a volume, persists across restarts).
+
+`make bot` still runs locally — the Telegram bot talks to the API over `localhost:8000`.

@@ -9,3 +9,4 @@ mock_data/
 *.db
 *.db-shm
 *.db-wal
+data/*.db
