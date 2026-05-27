@@ -6,3 +6,6 @@ __pycache__/
 chroma_db/
 .DS_Store
 mock_data/
+*.db
+*.db-shm
+*.db-wal

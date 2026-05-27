@@ -11,3 +11,4 @@ pydantic-settings
 langchain-anthropic
 python-telegram-bot
 httpx
+langgraph-checkpoint-sqlite

@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, START, END
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.base import BaseCheckpointSaver
 from agents.graph.state import ProposalState
 from agents.graph.subgraphs.proposal import build_proposal_subgraph
 from agents.graph.nodes import manager_review, write_proposal
@@ -49,7 +49,7 @@ def create_initial_state(payload: JobRequest) -> dict:
     }
 
 
-def build_graph():
+def build_graph(checkpointer: BaseCheckpointSaver):
     proposal_subgraph = build_proposal_subgraph().compile()
 
     builder = StateGraph(ProposalState)
@@ -63,5 +63,4 @@ def build_graph():
     builder.add_conditional_edges("manager_review", route_after_manager_review)
     builder.add_edge("write_proposal", "manager_review")
 
-    memory = MemorySaver()
-    return builder.compile(checkpointer=memory)
+    return builder.compile(checkpointer=checkpointer)

@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = 8000
     DEBUG: bool = True
+    DB_PATH: str = "./checkpoints.db"
 
     model_config = SettingsConfigDict(
         env_file=".env",
