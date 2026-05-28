@@ -1,5 +1,5 @@
 from pathlib import Path
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader, PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 import chromadb
 from chromadb.utils import embedding_functions
@@ -26,10 +26,17 @@ def setup_vector_db():
     collection = client.create_collection(name=COLLECTION_NAME, embedding_function=ef)
 
     total_chunks = 0
-    for profile_path in sorted(Path(DEVELOPERS_PATH).glob("*.txt")):
+    profile_paths = sorted([
+        *Path(DEVELOPERS_PATH).glob("*.txt"),
+        *Path(DEVELOPERS_PATH).glob("*.pdf"),
+    ])
+    for profile_path in profile_paths:
         developer_id = profile_path.stem  # e.g. "artem_koshevoi"
 
-        loader = TextLoader(str(profile_path), encoding="utf-8")
+        if profile_path.suffix == ".pdf":
+            loader = PyPDFLoader(str(profile_path))
+        else:
+            loader = TextLoader(str(profile_path), encoding="utf-8")
         documents = loader.load()
         chunks = splitter.split_documents(documents)
 
